@@ -5,66 +5,66 @@
 using std::cout;
 using std::endl;
 
-	Point Circle::getCenter()
-	{
-		return mCenter;
-	}
+Point Circle::getCenter()
+{
+	return mCenter;
+}
 
-	float Circle::getRadius()
-	{
-		return mRadius;
-	}
+float Circle::getRadius()
+{
+	return mRadius;
+}
 
-	void Circle::setCenter(Point p)
-	{
-		mCenter = p;
-	}
+void Circle::setCenter(Point p)
+{
+	mCenter = p;
+}
 
-	void Circle::setRadius(float r)
-	{
-		mRadius = 0;
-		if (r > 0)
-			mRadius = r;
-	}
-
-	Circle::Circle()
-	{
-		mCenter = Point(0, 0);
-		mRadius = 1;
-	};
-
-	Circle::Circle(Point p, float r)
-	{
-		mCenter = p;
+void Circle::setRadius(float r)
+{
+	mRadius = 0;
+	if (r > 0)
 		mRadius = r;
-	}
+}
 
-	Circle::Circle(const Circle& c)
-	{
-		mRadius = c.mRadius;
-		mCenter = c.mCenter;
-	}
+Circle::Circle()
+{
+	mCenter = Point(0, 0);
+	mRadius = 1;
+};
 
-	float Circle::getArea() const
-	{
-		return acos(-1) * mRadius * mRadius;//pi*r^2
-	}
+Circle::Circle(Point p, float r)
+{
+	mCenter = p;
+	mRadius = r;
+}
 
-	float Circle::getDistance(const Point& p) const
-	{
-		float dist = p.distance(mCenter);
-		return abs(dist - mRadius);
-	}
+Circle::Circle(const Circle& c)
+{
+	mRadius = c.mRadius;
+	mCenter = c.mCenter;
+}
 
-	bool Circle::isColliding(const Circle& c) const
-	{
-		if (mRadius + c.mRadius >= mCenter.distance(c.mCenter))
-			return true;
-		return false;
-	}
+float Circle::getArea() const
+{
+	return acos(-1) * mRadius * mRadius;//pi*r^2
+}
 
-	void Circle::move(const Point& p)//здесь понимаем р как радиус-вектор
-	{
-		mCenter.setX(mCenter.getX() + p.getX());
-		mCenter.setX(mCenter.getX() + p.getX());
-	}
+float Circle::getDistance(const Point& p) const
+{
+	float dist = p.distance(mCenter);
+	return abs(dist - mRadius);
+}
+
+bool Circle::isColliding(const Circle& c) const
+{
+	if (mRadius + c.mRadius >= mCenter.distance(c.mCenter))
+		return true;
+	return false;
+}
+
+void Circle::move(const Point& p)//здесь понимаем р как радиус-вектор
+{
+	mCenter.setX(mCenter.getX() + p.getX());
+	mCenter.setX(mCenter.getX() + p.getX());
+}
