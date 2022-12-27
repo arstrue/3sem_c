@@ -1,121 +1,191 @@
-#include<vector>
-#include<iostream>
-#include<span>
-#include<cmath>
+#include <iostream>
+#include <vector>
+#include <array>
+#include <string>
+#include <utility>
+using std::cout;
+using std::endl;
+using std::vector;
+using std::pair;
 
-void test1();
+void test6();
+void test7();
+void test8();
 
-//task1
-int sumEven(const std::vector<int>& v)
+//task6
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& out, const std::pair<T, U>& p)
 {
-	int sum = 0;
-	for (unsigned i = 0; i < v.size(); i++)
-		if (!(v[i] % 2))
-			sum += v[i];
-	return sum;
+    out << "(" << p.first << ", " << p.second << ")";
+    return out;
 }
 
-//task2
-std::vector<int> lastDigits1(const std::vector<int>& v)
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v)
 {
-	std::vector<int> tmp_v;
-	tmp_v.resize(v.size());
-	for (int i = 0; i < tmp_v.size(); i++)
-		tmp_v[i] = v[i] % 10;
-	return tmp_v;
+    out << "[";
+    for (size_t i = 0; i < v.size() - 1; ++i)
+        out << v[i] << ", ";
+
+    if (!v.empty())
+    {
+        out << v.back();
+    }
+    out << "]";
+    return out;
 }
 
-void lastDigits2(std::vector<int>& v)
+
+template <typename T>
+vector<pair<typename T::value_type, typename T::value_type>> pairing(const T& c)
 {
-	for (int i = 0; i < v.size(); i++)
-		v[i] = v[i] % 10;
+    using val_t = T::value_type;
+    vector<pair<val_t, val_t>> v{};
+
+    for (typename T::size_type i = 0; i < (c.size() - c.size() % 2 - 1); i += 2)
+        v.push_back(pair(c[i], c[i + 1]));
+    if (c.size() % 2)
+        v.push_back(pair(c[c.size() - 1], val_t()));
+    return v;
 }
 
-void lastDigits3(std::vector<int>* pv)
+//task7
+template <typename T>
+class Manager
 {
-	for (int i = 0; i < pv->size(); i++)
-		(*pv)[i] = (*pv)[i] % 10;
+private:
+    T* _ptr;
+public:
+    Manager() : _ptr(nullptr) {};
+
+    void allocate()
+    {
+        _ptr = (T*)std::malloc(sizeof(T));
+    }
+
+    void construct(const T& t)
+    {
+        new (_ptr) T(t);
+    }
+
+    void destruct() {
+        _ptr->~T();
+    }
+    void deallocate() {
+        free(_ptr);
+    }
+
+    T& get() {
+        return *_ptr;
+    }
+};
+
+//task8
+template <typename T>
+class Ref
+{
+private:
+    T* _ptr;
+public:
+    Ref(T& t) : _ptr(&t) {};
+
+    Ref(Ref& t) : _ptr(t._ptr) {};
+
+    T& get() { return *_ptr; }
+
+    T operator=(const T& t) { return *_ptr = t; }
+
+    T operator+(const T& t) { return *(new T(*_ptr + t)); }
+
+    T operator+=(const T& t) { return *this = *this + t; }
+
+    T* operator->() { return _ptr; }
+
+    template <typename U>
+    friend std::ostream& operator<<(std::ostream& out, Ref<U> r);
+};
+
+template <typename U>
+std::ostream& operator<<(std::ostream& out, Ref<U> r)
+{
+    out << *(r._ptr);
+    return out;
 }
 
-void lastDigits4(std::span<int> sp)
-{
-	for (int i = 0; i < sp.size(); i++)
-		sp[i] = sp[i] % 10;
-}
-
-//task3
-bool prime(int n)//впомогательная фунция определяющая простое ли число
-{
-	for (int i = 2; i < (sqrt(n)); i++)
-		if (n % i == 0)
-			return false;
-	if ((sqrt(n) - (int)sqrt(n)) < DBL_EPSILON)
-		return false;
-	return true;
-}
-
-std::vector<std::pair<int, int>> factorization(int n)
-{
-	std::vector<std::pair<int, int>> vpii;
-	if (n == 1)
-	{
-		vpii.push_back(std::make_pair(1, 1));
-		return vpii;
-	}
-	int i = 2;
-	int j = 0;
-	while (n > 1)
-	{
-		if (!prime(i))
-		{ 
-			i++;
-			continue;
-		}
-		j = 0;
-		while (n % i == 0)
-		{
-			n /= i;
-			j++;
-		}
-		if (j > 0)
-			vpii.push_back(std::make_pair(i, j));
-		i++;
-	}
-
-	return vpii;
-}
 
 int main()
 {
-	//test1();
-	std::vector<std::pair<int, int>> v = factorization(1);
-	for (int i = 0; i < v.size(); i++)
-		std::cout << v[i].first << " " << v[i].second << "\n";
-	return 0;
+    test6();
+    std::cout << "\n\n";
+    test7();
+    std::cout << "\n\n";
+    test8();
 }
 
-void test1()
+
+void test6()
 {
-	std::vector<int> v = { 4, 8, 155, 16, 23 };
-	v = lastDigits1(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
-	std::cout << std::endl;
+    vector v{ 10, 20, 30, 40, 50, 60 };
+    cout << pairing(v) << endl;
 
-	v = { 4, 8, 155, 16, 23 };
-	lastDigits2(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
-	std::cout << std::endl;
 
-	v = { 4, 8, 155, 16, 23 };
-	lastDigits3(&v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
-	std::cout << std::endl;
+    std::array<std::string, 7> a{ "cat", "dog", "mouse", "elephant", "tiget", "axolotl", "wolf" };
+    cout << pairing(a) << endl;
 
-	v = { 4, 8, 155, 16, 23 };
-	lastDigits4(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
+
+    std::string s{ "Cats and dogs!" };
+    cout << pairing(s) << endl;
+    return;
+}
+
+/*
+    Программа должна напечатать:
+    [(10, 20), (30, 40), (50, 60)]
+    [(cat, dog), (mouse, elephant), (tiget, axolotl), (wolf, )]
+    [(C, a), (t, s), ( , a), (n, d), ( , d), (o, g), (s, !)]
+*/
+
+void test7()
+{
+    Manager<std::string> a;
+    a.allocate();
+    a.construct("Cats and dogs");
+    a.get() += " and elephant";
+    cout << a.get() << endl;
+    a.destruct();
+    a.construct("Sapere Aude");
+    cout << a.get() << endl;
+    a.destruct();
+    a.deallocate();
+}
+
+void toUpper(Ref<std::string> r)
+{
+    for (size_t i = 0; i < r->size(); ++i)
+        r.get()[i] = toupper(r.get()[i]);
+}
+
+void test8()
+{
+    
+
+    int a = 10;
+    Ref<int> ra = a;
+    ra += 10;
+    cout << a << " " << ra << endl;
+    std::string s = "Cat";
+    Ref<std::string> rs = s;
+    rs = "Mouse";
+    rs += "Elephant";
+    cout << rs << endl;
+    cout << s << endl;
+    toUpper(s);
+    cout << s << endl;
+    std::vector<std::string> animals{ "Cat", "Dog", "Elephant", "Worm" };
+    std::vector<Ref<std::string>> refs{ animals.begin(), animals.end() };
+    for (int i = 0; i < refs.size(); ++i)
+        refs[i] += "s";
+    for (int i = 0; i < animals.size(); ++i)
+        cout << animals[i] << " ";
+    cout << endl;
 }
