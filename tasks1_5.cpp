@@ -90,7 +90,7 @@ public:
 	{
 	}
 
-	Time(std::string_view s)// ñòðîêà â ôîðìàòå "hh:mm:ss"
+	Time(std::string_view s)
 	{
 		std::string ss(s);
 		mHours = std::stoi((ss.std::string::substr(0, 2)));
