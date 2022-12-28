@@ -4,10 +4,11 @@
 #include <string>
 #include <array>
 #include <string_view>
+#include <iterator>
 
 //task 1
 void slide() {
-	std::cout << "n elements & ^Z\n";
+	std::cout << "n elements & ^Z/^X\n";
 	std::vector<int> v;
 
 	std::istream_iterator<int> iterat( std::cin ), eof;
