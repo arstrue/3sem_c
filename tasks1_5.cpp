@@ -100,7 +100,7 @@ public:
 	{
 	}
 
-	Time(std::string_view s)// строка в формате "hh:mm:ss"
+	Time(std::string_view s)// Г±ГІГ°Г®ГЄГ  Гў ГґГ®Г°Г¬Г ГІГҐ "hh:mm:ss"
 	{
 		std::string ss(s);
 		mHours = std::stoi((ss.std::string::substr(0, 2)));
@@ -169,6 +169,7 @@ void test1()
 	std::vector<int> v = { 4, 8, 15, 16, 42 };
 	std::cout << "task1\n {4, 8, 15, 16, 42}\n sumEven = " << sumEven(v) << std::endl << std::endl;
 }
+
 void test2()
 {
 	std::cout << "task2\n { 4, 8, 155, 16, 23 }\n";
