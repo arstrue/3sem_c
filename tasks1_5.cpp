@@ -1,12 +1,13 @@
-#include<vector>
-#include<iostream>
-#include<span>
-#include<cmath>
-#include<array>
-#include<string>
+#include <vector>
+#include <iostream>
+#include <span>
+#include <cmath>
+#include <array>
+#include <string>
+#include <numeric>
 
 void test1();
-void test2(); 
+void test2();
 void test3();
 void test4();
 void test5();
@@ -14,18 +15,13 @@ void test5();
 //task1
 int sumEven(const std::vector<int>& v)
 {
-	int sum = 0;
-	for (unsigned i = 0; i < v.size(); i++)
-		if (!(v[i] % 2))
-			sum += v[i];
-	return sum;
+	return std::accumulate(v.begin(), v.end(), 0, [](int a, int b) { return b % 2 ? a : a + b; });
 }
 
 //task2
 std::vector<int> lastDigits1(const std::vector<int>& v)
 {
-	std::vector<int> tmp_v;
-	tmp_v.resize(v.size());
+	std::vector<int> tmp_v(v.size());
 	for (size_t i = 0; i < tmp_v.size(); i++)
 		tmp_v[i] = v[i] % 10;
 	return tmp_v;
@@ -52,11 +48,9 @@ void lastDigits4(std::span<int> sp)
 //task3
 bool prime(int n)
 {
-	for (int i = 2; i < (sqrt(n)); i++)
+	for (int i = 2; i * i <= n; i++)
 		if (n % i == 0)
 			return false;
-	if ((sqrt(n) - (int)sqrt(n)) < DBL_EPSILON)
-		return false;
 	return true;
 }
 
@@ -68,26 +62,22 @@ std::vector<std::pair<int, int>> factorization(int n)
 		vpii.push_back(std::make_pair(1, 1));
 		return vpii;
 	}
-	int i = 2;
-	int j = 0;
+	int i = 2, j;
 	while (n > 1)
 	{
-		if (!prime(i))
+		if (prime(i))
 		{
-			i++;
-			continue;
+			j = 0;
+			while (n % i == 0)
+			{
+				n /= i;
+				j++;
+			}
+			if (j > 0)
+				vpii.push_back(std::make_pair(i, j));
 		}
-		j = 0;
-		while (n % i == 0)
-		{
-			n /= i;
-			j++;
-		}
-		if (j > 0)
-			vpii.push_back(std::make_pair(i, j));
 		i++;
 	}
-
 	return vpii;
 }
 
@@ -96,7 +86,7 @@ class Time {
 private:
 	int mHours, mMinutes, mSeconds;
 public:
-	Time(int hours, int minutes, int seconds): mHours(hours), mMinutes(minutes), mSeconds(seconds)
+	Time(int hours, int minutes, int seconds) : mHours(hours), mMinutes(minutes), mSeconds(seconds)
 	{
 	}
 
@@ -131,8 +121,6 @@ public:
 	{
 		return mSeconds;
 	}
-
-	//friend std::ostream& std::operator<<(std::ostream& out, Time t);
 };
 
 std::ostream& operator<<(std::ostream& out, Time t)
@@ -143,13 +131,12 @@ std::ostream& operator<<(std::ostream& out, Time t)
 
 //task5
 template <typename T>
-T maximum(const std::vector<T>& v) {
+T maximum(const std::vector<T>& v) 
+{
 	T max{ v[0] };
-	for (int i = 0, size = v.size(); i < size; ++i)
-	{
+	for (size_t i = 0; i < v.size(); ++i)
 		if (v[i] > max)
 			max = v[i];
-	}
 	return max;
 }
 
@@ -164,84 +151,134 @@ int main()
 	return 0;
 }
 
+template <typename T>
+void print(std::vector<T>& v) {
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i == 0)
+			std::cout << '{';
+		std::cout << v[i];
+		if (i == v.size() - 1)
+			std::cout << '}';
+		else
+			std::cout << ", ";
+	}
+}
+
+template <>
+void print(std::vector<std::pair<int, int>>& v) {
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i == 0)
+			std::cout << '{';
+		std::cout << '{' << v[i].first << ", " << v[i].second << '}';
+		if (i == v.size() - 1)
+			std::cout << '}';
+		else
+			std::cout << ", ";
+	}
+}
+
+template <>
+void print(std::vector<std::string>& v) {
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i == 0)
+			std::cout << '{';
+		std::cout << '"' << v[i] << '"';
+		if (i == v.size() - 1)
+			std::cout << '}';
+		else
+			std::cout << ", ";
+	}
+}
+
 void test1()
 {
 	std::vector<int> v = { 4, 8, 15, 16, 42 };
-	std::cout << "task1\n {4, 8, 15, 16, 42}\n sumEven = " << sumEven(v) << std::endl << std::endl;
+	print(v);
+	std::cout << std::endl << "sumEven = " << sumEven(v) << std::endl << std::endl;
 }
 
 void test2()
 {
-	std::cout << "task2\n { 4, 8, 155, 16, 23 }\n";
 	std::vector<int> v = { 4, 8, 155, 16, 23 };
+	print(v);
+	std::cout << ':' << std::endl;
+
 	v = lastDigits1(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
+	print(v);
 	std::cout << std::endl;
 
 	v = { 4, 8, 155, 16, 23 };
 	lastDigits2(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
+	print(v);
 	std::cout << std::endl;
 
 	v = { 4, 8, 155, 16, 23 };
 	lastDigits3(&v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
+	print(v);
 	std::cout << std::endl;
 
 	v = { 4, 8, 155, 16, 23 };
 	lastDigits4(v);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << v[i] << " ";
-
-	std::cout << std::endl;
+	print(v);
+	std::cout << std::endl << std::endl;
 }
 
 void test3()
 {
-	std::cout << "\ntask3\n60 ";
-	std::vector<std::pair<int, int>> v = factorization(60);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << "{" << v[i].first << ", " << v[i].second << "}, ";
+	int n = 60;
+	std::cout << n << ": ";
+	std::vector<std::pair<int, int>> v = factorization(n);
+	print(v);
+	std::cout << std::endl;
 
-	std::cout << std::endl << "626215995 ";
-	v = factorization(626215995);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << "{" << v[i].first << ", " << v[i].second << "}, ";
+	n = 626215995;
+	std::cout << n << ": ";
+	v = factorization(n);
+	print(v);
+	std::cout << std::endl;
 
-	std::cout << "1";
-	v = factorization(1);
-	for (size_t i = 0; i < v.size(); i++)
-		std::cout << "{" << v[i].first << ", " << v[i].second << "}, ";
+	n = 107;
+	std::cout << n << ": ";
+	v = factorization(n);
+	print(v);
+	std::cout << std::endl;
 
+	n = 1;
+	std::cout << n << ": ";
+	v = factorization(n);
+	print(v);
+	std::cout << std::endl << std::endl;
 }
 
 void test4()
 {
-	std::string_view s("14:23:55");
-	std::string_view ss("20:20:20");
-	Time t(s), t1(ss);
-	std::cout << "\n\ntask4\n14:23:55 + 20:20:20 = " << (t + t1) << std::endl << std::endl;
+	Time t{ static_cast<std::string_view>("14:23:55") }, 
+		t1{ static_cast<std::string_view>("20:20:20") };
+	std::cout << t << " + " << t1 << " = " << t + t1 << std::endl << std::endl;
 }
 
 void test5()
 {
-	//std::vector<int16_t> vi = { -23, 0, 43, -100 };
-	std::vector<int16_t> vi = { -1 };
-	std::vector<float> vf = { -12, 23, 34.5, 0 , 21 };
-	std::vector<std::string> vs = { "qw","qwe", "abc" };
-	std::vector<std::pair<int, int>> v_p_ii = { {1,2}, {23,-1}, {-3, 2}, {23, 3} };
+	std::vector<int> vi = { -1 };
+	std::vector<float> vf = { -12, 23, 34.5, 0, 21 };
+	std::vector<std::string> vs = { "qw", "qwe", "abc" };
+	std::vector<std::pair<int, int>> v_p_ii = { {1, 2}, {23, -1}, {-3, 2}, {23, 3} };
 
-	std::cout << "task5" << std::endl;
-	std::cout << "vi = { -23, 0, 43, -100 }, max(vi) = ";
-	std::cout << maximum(vi) << std::endl;
-	std::cout << "vf = { -12, 23, 34.5, 0 , 21 }, max(vf) = ";
-	std::cout << maximum(vf) << std::endl;
-	std::cout << "vs = { \"qw\",\"qwe\", \"abc\" }, max(vs) = ";
-	std::cout << maximum(vs) << std::endl;
-	std::cout << "v_p_ii = { {1,2}, {23,-1}, {-3, 2}, {23, 3} }, max(v_s_ii) = ";
-	std::cout << "{" << maximum(v_p_ii).first << ", " << maximum(v_p_ii).second << "}" << std::endl;
+	std::cout << "vi = ";
+	print(vi);
+	std::cout << ", max(vi) = " << maximum(vi) << std::endl;
+
+	std::cout << "vf = ";
+	print(vf);
+	std::cout << ", max(vf) = " << maximum(vf) << std::endl;
+
+	std::cout << "vs = ";
+	print(vs);
+	std::cout << ", max(vs) = " << '"' << maximum(vs) << '"' << std::endl;
+
+	std::cout << "v_p_ii = ";
+	print(v_p_ii);
+	std::cout << ", max(v_p_ii) = " 
+		<< "{" << maximum(v_p_ii).first << ", " 
+		<< maximum(v_p_ii).second << "}" << std::endl;
 }
-
