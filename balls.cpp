@@ -107,9 +107,9 @@ int main()
             circle.setPosition(balls[i].position);
 
             if (balls[i].charge > 0)
-                circle.setFillColor({ 255, 0, 0 });
+                circle.setFillColor(sf::Color::Red);
             else
-                circle.setFillColor({ 0, 0, 255 });
+                circle.setFillColor(sf::Color::Blue);
             window.draw(circle);
         }
 
